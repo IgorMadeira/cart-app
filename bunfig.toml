@@ -1,0 +1,8 @@
+[install]
+# Save the lockfile
+saveTextLockfile = true
+
+[install.trustedDependencies]
+prisma = true
+"@prisma/client" = true
+"@prisma/engines" = true

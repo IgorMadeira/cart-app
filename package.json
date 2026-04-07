@@ -1,0 +1,21 @@
+{
+  "name": "app001",
+  "private": true,
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "dev": "concurrently -n server,web -c blue,green \"bun run --filter @app001/server dev\" \"bun run --filter @app001/web dev --port 4201\"",
+    "build": "bun run --filter @app001/shared build && bun run --filter @app001/ui build && bun run --filter @app001/server build && bun run --filter @app001/web build",
+    "lint": "oxlint .",
+    "test": "bun run --filter '*' test",
+    "db:migrate": "bun run --filter @app001/server db:migrate",
+    "db:seed": "bun run --filter @app001/server db:seed"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "oxlint": "^0.16.0",
+    "typescript": "~5.7.0"
+  },
+  "dependencies": {
+    "bun-types": "^1.3.11"
+  }
+}
