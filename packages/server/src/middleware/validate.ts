@@ -1,15 +1,37 @@
-import type { Request, Response, NextFunction } from 'express';
-import type { ZodSchema } from 'zod';
+import type { Request, Response, NextFunction, RequestHandler } from 'express';
+import type { z, ZodSchema } from 'zod';
 import { HTTP_STATUS, ERROR_CODES } from '@app001/shared';
 
-declare module 'express' {
-  interface Request {
-    validated: Record<string, unknown>;
+declare global {
+  namespace Express {
+    interface Request {
+      validated: Record<string, unknown>;
+    }
+
+    interface ParamsDictionary {
+    [key: string]: string | string[];
+    [key: number]: string;
+}
   }
 }
 
-export function validate(schema: ZodSchema, source: 'body' | 'query' | 'params' = 'body') {
-  return (req: Request, res: Response, next: NextFunction) => {
+export function validate<
+const Source extends 'body' | 'query' | 'params',
+T extends ZodSchema, 
+  >(
+  schema: T, 
+  source: Source,
+) {
+  return (
+    req: Request<
+    Source extends 'params' ? z.infer<T> : unknown, 
+    unknown, 
+    Source extends 'body' ? z.infer<T> : unknown,
+    Source extends 'query' ? z.infer<T> : unknown
+    >,
+    res: Response<unknown>, 
+    next: NextFunction) => {
+
     const result = schema.safeParse(req[source]);
     if (!result.success) {
       const details: Record<string, string[]> = {};
@@ -28,7 +50,13 @@ export function validate(schema: ZodSchema, source: 'body' | 'query' | 'params' 
       });
       return;
     }
-    req.validated = result.data;
+    
+    Object.defineProperty(req, source, {
+      value: result.data,
+      writable: false,
+      configurable: false,
+    });
+
     next();
   };
 }

@@ -1,10 +1,11 @@
-import { Router } from 'express';
-import { UserCreateSchema, UserUpdateSchema, PaginationSchema, ROLES } from '@app001/shared';
+import { Response, Router } from 'express';
+import { UserCreateSchema, UserUpdateSchema, PaginationSchema, ROLES, User } from '@app001/shared';
 import { validate } from '../middleware/validate';
 import { authenticate, authorize } from '../middleware/auth';
 import * as userService from '../services/user.service';
+import z from 'zod';
 
-const router = Router();
+const router: Router = Router();
 
 // All user routes require authentication
 router.use(authenticate);
@@ -35,7 +36,7 @@ router.use(authenticate);
  */
 router.get('/', validate(PaginationSchema, 'query'), async (req, res, next) => {
   try {
-    const { page, pageSize, sortBy, sortOrder } = req.validated;
+    const { page, pageSize, sortBy, sortOrder } = req.query;
     const result = await userService.listUsers(page, pageSize, sortBy, sortOrder);
     res.json({ success: true, data: result });
   } catch (err) {
@@ -96,10 +97,10 @@ router.get('/:id', async (req, res, next) => {
 router.post(
   '/',
   authorize(ROLES.ADMIN),
-  validate(UserCreateSchema),
+  validate(UserCreateSchema, 'body'),
   async (req, res, next) => {
     try {
-      const user = await userService.createUser(req.validated);
+      const user = await userService.createUser(req.body);
       res.status(201).json({ success: true, data: user });
     } catch (err) {
       next(err);
@@ -137,10 +138,16 @@ router.post(
 router.patch(
   '/:id',
   authorize(ROLES.ADMIN),
-  validate(UserUpdateSchema),
-  async (req, res, next) => {
+  validate(z.object({ id: z.string() }), 'params'),
+  validate(UserUpdateSchema, 'body'),
+  async (
+    req, 
+    res: Response<{
+  success: boolean;
+  data: User;
+  }>, next) => {
     try {
-      const user = await userService.updateUser(req.params.id, req.validated);
+      const user = await userService.updateUser(req.params.id, req.body);
       res.json({ success: true, data: user });
     } catch (err) {
       next(err);
@@ -168,6 +175,7 @@ router.patch(
 router.delete(
   '/:id',
   authorize(ROLES.ADMIN),
+  validate(z.object({ id: z.string() }), 'params'),
   async (req, res, next) => {
     try {
       await userService.deleteUser(req.params.id);

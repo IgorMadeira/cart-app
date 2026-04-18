@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import swaggerUi from 'swagger-ui-express';
 
@@ -8,13 +9,15 @@ import { swaggerSpec } from './lib/swagger';
 import { errorHandler } from './middleware/errorHandler';
 import authRoutes from './routes/auth';
 import userRoutes from './routes/users';
+import type { Express } from 'express';
 
-const app = express();
+const app: Express = express();
 
 // --- Security & parsing ---
 app.use(helmet());
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: '1mb' }));
+app.use(cookieParser());
 
 // --- Rate limiting ---
 app.use(

@@ -12,15 +12,13 @@ interface AuthState {
   loading: boolean;
 }
 
-const initialState: AuthState = {
+export const AuthStore = signalStore(
+  { providedIn: 'root' },
+  withState<AuthState>({
   user: null,
   isAuthenticated: false,
   loading: false,
-};
-
-export const AuthStore = signalStore(
-  { providedIn: 'root' },
-  withState(initialState),
+}),
   withMethods((store) => ({
     setUser(user: User) {
       patchState(store, { user, isAuthenticated: true, loading: false });

@@ -30,5 +30,4 @@ export interface RefreshTokenRequest {
 
 export interface AuthResponse {
   user: User;
-  tokens: AuthTokens;
 }

@@ -81,8 +81,15 @@ export class ShellComponent {
   private router = inject(Router);
 
   logout() {
-    this.authService.clearTokens();
-    this.authStore.logout();
-    this.router.navigate(['/login']);
+    this.authService.logout().subscribe({
+      next: () => {
+        this.authStore.logout();
+        this.router.navigate(['/login']);
+      },
+      error: () => {
+        this.authStore.logout();
+        this.router.navigate(['/login']);
+      },
+    });
   }
 }

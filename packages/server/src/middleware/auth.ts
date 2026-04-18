@@ -18,16 +18,15 @@ declare global {
 }
 
 export function authenticate(req: Request, res: Response, next: NextFunction) {
-  const header = req.headers.authorization;
-  if (!header?.startsWith('Bearer ')) {
+  const token = req.cookies.access_token;
+  if (!token) {
     res.status(HTTP_STATUS.UNAUTHORIZED).json({
       success: false,
-      error: { code: ERROR_CODES.UNAUTHORIZED, message: 'Missing or invalid authorization header' },
+      error: { code: ERROR_CODES.UNAUTHORIZED, message: 'Missing access token' },
     });
     return;
   }
 
-  const token = header.slice(7);
   try {
     const payload = jwt.verify(token, config.jwt.secret) as JwtPayload;
     req.user = payload;

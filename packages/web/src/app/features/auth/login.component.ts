@@ -103,7 +103,6 @@ export class LoginComponent {
     this.auth.login(email, password).subscribe({
       next: (res) => {
         if (res.success && res.data) {
-          this.auth.saveTokens(res.data.tokens.accessToken, res.data.tokens.refreshToken);
           this.authStore.setUser(res.data.user);
           this.router.navigate(['/dashboard']);
         }
