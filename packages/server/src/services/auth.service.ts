@@ -4,26 +4,16 @@ import crypto from 'node:crypto';
 import prisma from '../prisma/client';
 import { config } from '../lib/config';
 import type { JwtPayload } from '../middleware/auth';
-import type { AuthTokens, User } from '@app001/shared';
+import { userSchema, type AuthTokens } from '@app001/shared';
 
 const SALT_ROUNDS = 10;
 
-function mapUser(dbUser: { id: string; email: string; name: string; role: string; createdAt: Date; updatedAt: Date }): User {
-  return {
-    id: dbUser.id,
-    email: dbUser.email,
-    name: dbUser.name,
-    role: dbUser.role,
-    createdAt: dbUser.createdAt.toISOString(),
-    updatedAt: dbUser.updatedAt.toISOString(),
-  };
-}
 
 function generateTokens(user: { id: string; email: string; role: string }): AuthTokens {
   const payload: JwtPayload = { sub: user.id, email: user.email, role: user.role };
 
   const accessToken = jwt.sign(payload, config.jwt.secret, {
-    expiresIn: config.jwt.expiresIn as string,
+    expiresIn: config.jwt.expiresIn,
   });
 
   const refreshToken = crypto.randomBytes(40).toString('hex');
@@ -49,7 +39,7 @@ export async function register(email: string, password: string, name: string) {
   const tokens = generateTokens(user);
   await storeRefreshToken(tokens.refreshToken, user.id);
 
-  return { user: mapUser(user), tokens };
+  return { user: userSchema.parse(user), tokens };
 }
 
 export async function login(email: string, password: string) {
@@ -66,7 +56,7 @@ export async function login(email: string, password: string) {
   const tokens = generateTokens(user);
   await storeRefreshToken(tokens.refreshToken, user.id);
 
-  return { user: mapUser(user), tokens };
+  return { user: userSchema.parse(user), tokens };
 }
 
 export async function refreshAccessToken(refreshToken: string) {
@@ -88,13 +78,13 @@ export async function refreshAccessToken(refreshToken: string) {
   const tokens = generateTokens(stored.user);
   await storeRefreshToken(tokens.refreshToken, stored.user.id);
 
-  return { user: mapUser(stored.user), tokens };
+  return { user: userSchema.parse(stored.user), tokens };
 }
 
 export async function getMe(userId: string) {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) throw new NotFoundError('User not found');
-  return mapUser(user);
+  return userSchema.parse(user);
 }
 
 async function storeRefreshToken(token: string, userId: string) {

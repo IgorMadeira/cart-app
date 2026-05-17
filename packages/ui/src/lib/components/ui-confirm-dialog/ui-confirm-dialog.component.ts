@@ -2,9 +2,9 @@ import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import {
   MAT_DIALOG_DATA,
-  MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
+import { UiDialogComponent } from '../ui-dialog/ui-dialog.component';
 
 export interface ConfirmDialogData {
   title: string;
@@ -16,20 +16,19 @@ export interface ConfirmDialogData {
 @Component({
   selector: 'ui-confirm-dialog',
   standalone: true,
-  imports: [MatDialogModule, MatButtonModule],
+  imports: [MatButtonModule, UiDialogComponent],
   template: `
-    <h2 mat-dialog-title>{{ data.title }}</h2>
-    <mat-dialog-content>
+    <ui-dialog [title]="data.title">
       <p>{{ data.message }}</p>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">
-        {{ data.cancelText || 'Cancel' }}
-      </button>
-      <button mat-flat-button color="warn" (click)="onConfirm()">
-        {{ data.confirmText || 'Confirm' }}
-      </button>
-    </mat-dialog-actions>
+      <ng-container actions>
+        <button mat-button (click)="onCancel()">
+          {{ data.cancelText || 'Cancel' }}
+        </button>
+        <button mat-flat-button color="warn" (click)="onConfirm()">
+          {{ data.confirmText || 'Confirm' }}
+        </button>
+      </ng-container>
+    </ui-dialog>
   `,
 })
 export class UiConfirmDialogComponent {

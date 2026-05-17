@@ -17,6 +17,7 @@ model User {
   updatedAt    DateTime @updatedAt @map("updated_at")
 
   refreshTokens RefreshToken[]
+  documents     DocumentModel[]
 
   @@map("users")
 }
@@ -31,4 +32,58 @@ model RefreshToken {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("refresh_tokens")
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  documents DocumentModel[]
+
+  @@map("categories")
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+
+  documents DocumentModelTag[]
+
+  @@map("tags")
+}
+
+model DocumentModel {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  content     String?
+  fileName    String?  @map("file_name")
+  fileType    String?  @map("file_type")
+  fileSize    Int?     @map("file_size")
+  fileData    Bytes?   @map("file_data")
+  categoryId  String?  @map("category_id")
+  createdById String   @map("created_by_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  category  Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  createdBy User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  tags      DocumentModelTag[]
+
+  @@map("document_models")
+}
+
+model DocumentModelTag {
+  documentId String @map("document_id")
+  tagId      String @map("tag_id")
+
+  document DocumentModel @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  tag      Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([documentId, tagId])
+  @@map("document_model_tags")
 }

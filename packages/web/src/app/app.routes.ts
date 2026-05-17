@@ -32,6 +32,41 @@ export const routes: Routes = [
             (m) => m.UserListComponent,
           ),
       },
+      {
+        path: 'users/new',
+        loadComponent: () =>
+          import('./features/users/user-form.component').then(
+            (m) => m.UserFormComponent,
+          ),
+      },
+      {
+        path: 'users/:id/edit',
+        loadComponent: () =>
+          import('./features/users/user-form.component').then(
+            (m) => m.UserFormComponent,
+          ),
+      },
+      {
+        path: 'document-models',
+        loadComponent: () =>
+          import('./features/document-models/document-model-list.component').then(
+            (m) => m.DocumentModelListComponent,
+          ),
+      },
+      {
+        path: 'document-models/new',
+        loadComponent: () =>
+          import('./features/document-models/document-model-form.component').then(
+            (m) => m.DocumentModelFormComponent,
+          ),
+      },
+      {
+        path: 'document-models/:id/edit',
+        loadComponent: () =>
+          import('./features/document-models/document-model-form.component').then(
+            (m) => m.DocumentModelFormComponent,
+          ),
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

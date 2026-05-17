@@ -7,7 +7,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../core/auth.service';
 import { AuthStore } from '../core/auth.store';
+import { PageHeaderService } from '../core/page-header.service';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-shell',
@@ -37,11 +39,24 @@ import { Router } from '@angular/router';
             <mat-icon matListItemIcon>people</mat-icon>
             <span matListItemTitle>Users</span>
           </a>
+          <a mat-list-item routerLink="/document-models" routerLinkActive="active">
+            <mat-icon matListItemIcon>article</mat-icon>
+            <span matListItemTitle>Document Models</span>
+          </a>
         </mat-nav-list>
       </mat-sidenav>
 
       <mat-sidenav-content>
         <mat-toolbar>
+          @if (pageHeader.showBack()) {
+            <button mat-icon-button (click)="goBack()" aria-label="Go back">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+          }
+          <span class="toolbar-title">{{ pageHeader.title() }}</span>
+          @if (pageHeader.subtitle()) {
+            <span class="toolbar-subtitle">{{ pageHeader.subtitle() }}</span>
+          }
           <span class="spacer"></span>
           @if (authStore.user(); as user) {
             <span>{{ user.name }}</span>
@@ -64,7 +79,22 @@ import { Router } from '@angular/router';
     .sidenav {
       width: 240px;
     }
+    mat-sidenav-content {
+      display: flex;
+      flex-direction: column;
+    }
+    .toolbar-title {
+      font-size: 20px;
+      font-weight: 500;
+    }
+    .toolbar-subtitle {
+      font-size: 13px;
+      margin-left: 12px;
+      opacity: 0.7;
+    }
     .content {
+      flex: 1;
+      overflow-y: auto;
       padding: 24px;
     }
     .spacer {
@@ -77,8 +107,19 @@ import { Router } from '@angular/router';
 })
 export class ShellComponent {
   authStore = inject(AuthStore);
+  pageHeader = inject(PageHeaderService);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private location = inject(Location);
+
+  goBack() {
+    const backRoute = this.pageHeader.backRoute();
+    if (backRoute) {
+      this.router.navigate([backRoute]);
+    } else {
+      this.location.back();
+    }
+  }
 
   logout() {
     this.authService.logout().subscribe({

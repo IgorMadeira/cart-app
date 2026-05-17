@@ -1,22 +1,14 @@
 import { Component, input } from '@angular/core';
-import { MatToolbarModule } from '@angular/material/toolbar';
 
 @Component({
   selector: 'ui-page-shell',
   standalone: true,
-  imports: [MatToolbarModule],
+  imports: [],
   template: `
     <div class="page-shell">
-      <mat-toolbar color="primary" class="page-header">
-        <span>{{ title() }}</span>
-        <span class="spacer"></span>
+      <div class="page-actions">
         <ng-content select="[actions]" />
-      </mat-toolbar>
-
-      @if (subtitle()) {
-        <p class="page-subtitle">{{ subtitle() }}</p>
-      }
-
+      </div>
       <div class="page-content">
         <ng-content />
       </div>
@@ -28,26 +20,18 @@ import { MatToolbarModule } from '@angular/material/toolbar';
       display: flex;
       flex-direction: column;
     }
-    .page-header {
-      flex-shrink: 0;
+    .page-actions:empty {
+      display: none;
     }
-    .spacer {
-      flex: 1 1 auto;
-    }
-    .page-subtitle {
-      padding: 8px 16px 0;
-      margin: 0;
-      color: rgba(0, 0, 0, 0.54);
-      font-size: 14px;
+    .page-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
     }
     .page-content {
       flex: 1;
-      padding: 16px;
-      overflow-y: auto;
     }
   `,
 })
-export class UiPageShellComponent {
-  title = input.required<string>();
-  subtitle = input<string | undefined>(undefined);
-}
+export class UiPageShellComponent {}

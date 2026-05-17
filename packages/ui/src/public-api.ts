@@ -1,5 +1,6 @@
 // Components
 export * from './lib/components/ui-button/ui-button.component';
+export * from './lib/components/ui-dialog/ui-dialog.component';
 export * from './lib/components/ui-table/ui-table.component';
 export * from './lib/components/ui-page-shell/ui-page-shell.component';
 export * from './lib/components/ui-confirm-dialog/ui-confirm-dialog.component';

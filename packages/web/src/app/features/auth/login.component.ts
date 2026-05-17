@@ -5,9 +5,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../core/auth.service';
 import { AuthStore } from '../../core/auth.store';
+import { HTTP_STATUS } from '@app001/shared';
 
 @Component({
   selector: 'app-login',
@@ -107,9 +109,12 @@ export class LoginComponent {
           this.router.navigate(['/dashboard']);
         }
       },
-      error: () => {
+      error: (err: HttpErrorResponse) => {
         this.loading = false;
-        this.snackBar.open('Invalid email or password', 'Close', { duration: 3000 });
+        const message = err.status === HTTP_STATUS.UNAUTHORIZED
+          ? err.error?.error?.message ?? 'Invalid email or password'
+          : `Error ${err.status}: ${err.error?.error?.message ?? 'Something went wrong'}`;
+        this.snackBar.open(message, 'Close', { duration: 3000 });
       },
     });
   }

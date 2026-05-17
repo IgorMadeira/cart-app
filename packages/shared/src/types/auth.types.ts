@@ -1,11 +1,7 @@
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import z from "zod";
+import { userSchema } from "../schemas";
+
+export type User = z.infer<typeof userSchema>;
 
 export interface AuthTokens {
   accessToken: string;

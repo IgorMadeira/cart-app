@@ -13,6 +13,9 @@ export const PERMISSIONS = {
   DASHBOARD_READ: 'dashboard:read',
   SETTINGS_READ: 'settings:read',
   SETTINGS_WRITE: 'settings:write',
+  DOCUMENT_MODELS_READ: 'document-models:read',
+  DOCUMENT_MODELS_WRITE: 'document-models:write',
+  CATEGORIES_WRITE: 'categories:write',
 } as const;
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
@@ -24,9 +27,12 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     PERMISSIONS.USERS_WRITE,
     PERMISSIONS.DASHBOARD_READ,
     PERMISSIONS.SETTINGS_READ,
+    PERMISSIONS.DOCUMENT_MODELS_READ,
+    PERMISSIONS.DOCUMENT_MODELS_WRITE,
   ],
   [ROLES.VIEWER]: [
     PERMISSIONS.USERS_READ,
     PERMISSIONS.DASHBOARD_READ,
+    PERMISSIONS.DOCUMENT_MODELS_READ,
   ],
 };

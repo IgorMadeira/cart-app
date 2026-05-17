@@ -12,3 +12,13 @@ html, body {
   display: flex;
   align-items: center;
 }
+
+.action-download mat-icon {
+  color: #1976d2;
+}
+.action-edit mat-icon {
+  color: #ff9800;
+}
+.action-delete mat-icon {
+  color: #f44336;
+}

@@ -9,6 +9,10 @@ import { swaggerSpec } from './lib/swagger';
 import { errorHandler } from './middleware/errorHandler';
 import authRoutes from './routes/auth';
 import userRoutes from './routes/users';
+import categoryRoutes from './routes/categories';
+import tagRoutes from './routes/tags';
+import documentModelRoutes from './routes/document-models';
+import { config } from './lib/config';
 import type { Express } from 'express';
 
 const app: Express = express();
@@ -19,16 +23,18 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: '1mb' }));
 app.use(cookieParser());
 
-// --- Rate limiting ---
-app.use(
-  '/api/',
-  rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 min
-    max: 100,
-    standardHeaders: true,
-    legacyHeaders: false,
-  }),
-);
+// --- Rate limiting (production only) ---
+if (config.isProd) {
+  app.use(
+    '/api/',
+    rateLimit({
+      windowMs: 15 * 60 * 1000, // 15 min
+      max: 100,
+      standardHeaders: true,
+      legacyHeaders: false,
+    }),
+  );
+}
 
 // --- API docs ---
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -37,6 +43,9 @@ app.get('/api/docs.json', (_req, res) => res.json(swaggerSpec));
 // --- Routes ---
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/tags', tagRoutes);
+app.use('/api/document-models', documentModelRoutes);
 
 // --- Health check ---
 app.get('/api/health', (_req, res) => {

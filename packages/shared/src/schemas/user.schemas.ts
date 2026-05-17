@@ -1,5 +1,14 @@
 import { z } from 'zod';
 
+export const userSchema = z.object({
+  id: z.string(),
+  email: z.string().email(),
+  name: z.string(),
+  role: z.string(),
+  createdAt: z.date().transform((d) => d.toISOString()),
+  updatedAt: z.date().transform((d) => d.toISOString()),
+});
+
 export const UserCreateSchema = z.object({
   email: z.string().email(),
   name: z.string().min(2).max(100),
