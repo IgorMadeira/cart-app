@@ -13,7 +13,7 @@ function generateTokens(user: { id: string; email: string; role: string }): Auth
   const payload: JwtPayload = { sub: user.id, email: user.email, role: user.role };
 
   const accessToken = jwt.sign(payload, config.jwt.secret, {
-    expiresIn: config.jwt.expiresIn,
+    expiresIn: config.jwt.expiresInSeconds,
   });
 
   const refreshToken = crypto.randomBytes(40).toString('hex');
@@ -21,7 +21,7 @@ function generateTokens(user: { id: string; email: string; role: string }): Auth
   return {
     accessToken,
     refreshToken,
-    expiresIn: 900, // 15 min in seconds
+    expiresIn: config.jwt.expiresInSeconds,
   };
 }
 

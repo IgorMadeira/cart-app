@@ -118,6 +118,11 @@ import { PageHeaderService } from '../../core/page-header.service';
                 }
               </mat-chip-set>
             }
+            @case ('aiEnabled') {
+              @if (row.aiEnabled) {
+                <mat-icon class="ai-enabled" aria-label="AI enabled">auto_awesome</mat-icon>
+              }
+            }
             @case ('createdAt') {
               {{ row.createdAt | relativeDate }}
             }
@@ -174,6 +179,9 @@ import { PageHeaderService } from '../../core/page-header.service';
       grid-template-columns: 40px 40px 40px;
       align-items: center;
     }
+    .ai-enabled {
+      color: #5b5fc7;
+    }
   `,
 })
 export class DocumentModelListComponent implements OnInit {
@@ -190,6 +198,7 @@ export class DocumentModelListComponent implements OnInit {
     { key: 'title', label: 'Title', sortable: true },
     { key: 'categoryName', label: 'Category', sortable: true },
     { key: 'tags', label: 'Tags' },
+    { key: 'aiEnabled', label: 'AI' },
     { key: 'createdByName', label: 'Created By' },
     { key: 'createdAt', label: 'Created', sortable: true },
     { key: 'actions', label: '' },

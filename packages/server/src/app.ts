@@ -12,6 +12,7 @@ import userRoutes from './routes/users';
 import categoryRoutes from './routes/categories';
 import tagRoutes from './routes/tags';
 import documentModelRoutes from './routes/document-models';
+import documentRoutes from './routes/documents';
 import { config } from './lib/config';
 import type { Express } from 'express';
 
@@ -46,6 +47,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/tags', tagRoutes);
 app.use('/api/document-models', documentModelRoutes);
+app.use('/api/documents', documentRoutes);
 
 // --- Health check ---
 app.get('/api/health', (_req, res) => {

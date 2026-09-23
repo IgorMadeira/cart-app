@@ -15,6 +15,7 @@ export const PERMISSIONS = {
   SETTINGS_WRITE: 'settings:write',
   DOCUMENT_MODELS_READ: 'document-models:read',
   DOCUMENT_MODELS_WRITE: 'document-models:write',
+  DOCUMENT_MODELS_GENERATE: 'document-models:generate',
   CATEGORIES_WRITE: 'categories:write',
 } as const;
 
@@ -29,6 +30,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     PERMISSIONS.SETTINGS_READ,
     PERMISSIONS.DOCUMENT_MODELS_READ,
     PERMISSIONS.DOCUMENT_MODELS_WRITE,
+    PERMISSIONS.DOCUMENT_MODELS_GENERATE,
   ],
   [ROLES.VIEWER]: [
     PERMISSIONS.USERS_READ,

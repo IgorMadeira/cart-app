@@ -1,4 +1,4 @@
-import type { Request, Response, NextFunction, RequestHandler } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import type { z, ZodSchema } from 'zod';
 import { HTTP_STATUS, ERROR_CODES } from '@app001/shared';
 

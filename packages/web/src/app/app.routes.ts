@@ -67,6 +67,13 @@ export const routes: Routes = [
             (m) => m.DocumentModelFormComponent,
           ),
       },
+      {
+        path: 'documents/create',
+        loadComponent: () =>
+          import('./features/documents/create-document.component').then(
+            (m) => m.CreateDocumentComponent,
+          ),
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

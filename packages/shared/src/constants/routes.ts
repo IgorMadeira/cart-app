@@ -16,6 +16,12 @@ export const API_ROUTES = {
     BASE: '/api/document-models',
     BY_ID: (id: string) => `/api/document-models/${id}`,
     DOWNLOAD: (id: string) => `/api/document-models/${id}/download`,
+    GENERATE: (id: string) => `/api/document-models/${id}/generate`,
+  },
+  DOCUMENTS: {
+    GENERATE: '/api/documents/generate',
+    PRE_VALIDATE_CONFORMITY: '/api/documents/pre-validate-conformity',
+    POST_VALIDATE_CONFORMITY: '/api/documents/post-validate-conformity',
   },
   CATEGORIES: {
     BASE: '/api/categories',

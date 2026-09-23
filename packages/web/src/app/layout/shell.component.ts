@@ -43,6 +43,10 @@ import { Location } from '@angular/common';
             <mat-icon matListItemIcon>article</mat-icon>
             <span matListItemTitle>Document Models</span>
           </a>
+          <a mat-list-item routerLink="/documents/create" routerLinkActive="active">
+            <mat-icon matListItemIcon>post_add</mat-icon>
+            <span matListItemTitle>Create Document</span>
+          </a>
         </mat-nav-list>
       </mat-sidenav>
 

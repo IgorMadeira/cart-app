@@ -57,24 +57,44 @@ model Tag {
 }
 
 model DocumentModel {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  content     String?
-  fileName    String?  @map("file_name")
-  fileType    String?  @map("file_type")
-  fileSize    Int?     @map("file_size")
-  fileData    Bytes?   @map("file_data")
-  categoryId  String?  @map("category_id")
-  createdById String   @map("created_by_id")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id               String   @id @default(cuid())
+  title            String
+  description      String?
+  content          String?
+  aiEnabled        Boolean  @default(false) @map("ai_enabled")
+  aiInstructions   String?  @map("ai_instructions")
+  legislationRules String?  @map("legislation_rules")
+  fileName         String?  @map("file_name")
+  fileType         String?  @map("file_type")
+  fileSize         Int?     @map("file_size")
+  fileData         Bytes?   @map("file_data")
+  categoryId       String?  @map("category_id")
+  createdById      String   @map("created_by_id")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
 
-  category  Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  createdBy User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
-  tags      DocumentModelTag[]
+  category          Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  createdBy         User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  tags              DocumentModelTag[]
+  linkedDocuments   DocumentModelLink[] @relation("DocumentModelLinks")
+  linkedByDocuments DocumentModelLink[] @relation("LinkedDocumentModelLinks")
 
   @@map("document_models")
+}
+
+model DocumentModelLink {
+  sourceDocumentModelId String   @map("source_document_model_id")
+  linkedDocumentModelId String   @map("linked_document_model_id")
+  linkType              String   @default("related") @map("link_type")
+  sortOrder             Int      @default(0) @map("sort_order")
+  createdAt             DateTime @default(now()) @map("created_at")
+
+  sourceDocumentModel DocumentModel @relation("DocumentModelLinks", fields: [sourceDocumentModelId], references: [id], onDelete: Cascade)
+  linkedDocumentModel DocumentModel @relation("LinkedDocumentModelLinks", fields: [linkedDocumentModelId], references: [id], onDelete: Cascade)
+
+  @@id([sourceDocumentModelId, linkedDocumentModelId])
+  @@index([linkedDocumentModelId])
+  @@map("document_model_links")
 }
 
 model DocumentModelTag {

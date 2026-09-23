@@ -1,13 +1,16 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import type {
-  ApiResponse,
-  PaginatedResponse,
-  DocumentModel,
-  DocumentModelListItem,
-  Category,
-  Tag,
+import {
+  type ApiResponse,
+  type PaginatedResponse,
+  type DocumentModel,
+  type DocumentModelListItem,
+  type DocumentGenerationRequest,
+  type DocumentGenerationResult,
+  type Category,
+  type Tag,
+  API_ROUTES,
 } from '@app001/shared';
 
 @Injectable({ providedIn: 'root' })
@@ -50,6 +53,10 @@ export class DocumentModelService {
 
   downloadDocument(id: string): Observable<Blob> {
     return this.http.get(`/api/document-models/${id}/download`, { responseType: 'blob' });
+  }
+
+  generateDocument(id: string, data: DocumentGenerationRequest): Observable<ApiResponse<DocumentGenerationResult>> {
+    return this.http.post<ApiResponse<DocumentGenerationResult>>(API_ROUTES.DOCUMENT_MODELS.GENERATE(id), data);
   }
 
   // Categories

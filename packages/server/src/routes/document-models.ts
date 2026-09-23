@@ -1,10 +1,17 @@
-import { Router } from 'express';
+import { Router, type RequestHandler } from 'express';
 import path from 'node:path';
 import multer from 'multer';
-import { DocumentModelCreateSchema, DocumentModelUpdateSchema, DocumentModelFilterSchema, ROLES } from '@app001/shared';
+import {
+  DocumentGenerationRequestSchema,
+  DocumentModelCreateSchema,
+  DocumentModelFilterSchema,
+  DocumentModelUpdateSchema,
+  ROLES,
+} from '@app001/shared';
 import { validate } from '../middleware/validate';
 import { authenticate, authorize } from '../middleware/auth';
 import * as documentModelService from '../services/document-model.service';
+import * as documentGenerationService from '../services/document-generation.service';
 import z from 'zod';
 
 const ALLOWED_MIME_TYPES = [
@@ -45,6 +52,51 @@ const upload = multer({
     }
   },
 });
+
+function parseJsonStringArrayField(body: Record<string, unknown>, fieldName: string): void {
+  const value = body[fieldName];
+  if (typeof value !== 'string') return;
+
+  try {
+    const parsed = JSON.parse(value);
+    if (!Array.isArray(parsed)) {
+      body[fieldName] = undefined;
+      return;
+    }
+
+    const values: string[] = [];
+    for (const item of parsed) {
+      if (typeof item !== 'string') {
+        body[fieldName] = undefined;
+        return;
+      }
+      values.push(item);
+    }
+
+    body[fieldName] = values;
+  } catch {
+    body[fieldName] = undefined;
+  }
+}
+
+function parseBooleanField(body: Record<string, unknown>, fieldName: string): void {
+  const value = body[fieldName];
+  if (value === 'true') {
+    body[fieldName] = true;
+    return;
+  }
+
+  if (value === 'false') {
+    body[fieldName] = false;
+  }
+}
+
+const normalizeDocumentModelFormBody: RequestHandler = (req, _res, next) => {
+  parseJsonStringArrayField(req.body, 'tagIds');
+  parseJsonStringArrayField(req.body, 'linkedDocumentModelIds');
+  parseBooleanField(req.body, 'aiEnabled');
+  next();
+};
 
 const router: Router = Router();
 
@@ -91,20 +143,25 @@ router.get(
 );
 
 router.post(
+  '/:id/generate',
+  authorize(ROLES.ADMIN, ROLES.EDITOR),
+  validate(z.object({ id: z.string() }), 'params'),
+  validate(DocumentGenerationRequestSchema, 'body'),
+  async (req, res, next) => {
+    try {
+      const result = await documentGenerationService.generateDocumentFromModel(req.params.id, req.body);
+      res.json({ success: true, data: result });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+router.post(
   '/',
   authorize(ROLES.ADMIN, ROLES.EDITOR),
   upload.single('file'),
-  (req, res, next) => {
-    // Parse tagIds from form-data string if present
-    if (typeof req.body.tagIds === 'string') {
-      try {
-        req.body.tagIds = JSON.parse(req.body.tagIds);
-      } catch {
-        req.body.tagIds = undefined;
-      }
-    }
-    next();
-  },
+  normalizeDocumentModelFormBody,
   validate(DocumentModelCreateSchema, 'body'),
   async (req, res, next) => {
     try {
@@ -120,6 +177,7 @@ router.patch(
   '/:id',
   authorize(ROLES.ADMIN, ROLES.EDITOR),
   upload.single('file'),
+  normalizeDocumentModelFormBody,
   validate(z.object({ id: z.string() }), 'params'),
   validate(DocumentModelUpdateSchema, 'body'),
   async (req, res, next) => {
